@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block nav_menu %}
+  {{ nav_item("Home", "#home") }}
+  {{ super() }}
+{% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+
+{% block content %}
+
+<section id="home" class="link-target">
+  {% include 'snap_display_widget_playground.html' %}
+</section>
+
+{% endblock %}

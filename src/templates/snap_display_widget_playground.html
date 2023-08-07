@@ -1,0 +1,562 @@
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>LinkedIn Sales Navigator Application Platform - Display Playground</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+<div id="snap-content">
+    <div class="row">
+        <h3>SNAP Display Widget Playground</h3>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <fieldset>
+                <legend>Environment Variables</legend>
+                <form>
+                    <div class="form-group">
+                        <label v-for="(value,key) in options.environments" class="radio-inline">
+                            <input type="radio" v-bind:value="key" v-model="form.environment" v-on:change="updateEnvironment($event)">
+                            [[key]]
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Domain</label>
+                        <input type="text" class="form-control" v-model="form.domain">
+                    </div>
+                    <div class="form-group">
+                        <label>API Key</label>
+                        <input type="text" class="form-control" v-model="form.apiKey">
+                    </div>
+                    <div class="form-group">
+                        <label>Version</label>
+                        <input type="text" class="form-control" v-model="form.version">
+                    </div>
+                </form>
+            </fieldset>
+            <fieldset>
+                <legend>Choose the widget</legend>
+                <div class="form-group">
+                    <label v-for="(value,key) in options.widget" class="radio-inline">
+                        <input type="radio" v-bind:value="key" v-model="form.widgetType" v-on:change="updateCrmRecordId($event)">
+                        [[key]]
+                    </label>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>CRM Record</legend>
+                    <div class="form-group">
+                        <label>crmSourceType</label>
+                        <input type="text" class="form-control" v-model="form.crmSourceType" v-on:change="updateWidgetType">
+                    </div>
+                    <div class="form-group">
+                        <label>crmOrgId</label>
+                        <input type="text" class="form-control" v-model="form.crmOrgId">
+                    </div>
+                    <div class="form-group">
+                        <label>crmRecordId</label>
+                        <input type="text" class="form-control" v-model="form.crmRecordId">
+                    </div>
+            </fieldset>
+            <fieldset>
+                <legend>Match keyword</legend>
+                <div v-if='form.widgetType=="lead"'>
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" class="form-control" v-model="form.firstName" @input="updateCrmRecordId($event)">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" class="form-control" v-model="form.lastName" @input="updateCrmRecordId($event)">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="text" class="form-control" v-model="form.email">
+                    </div>
+                    <div class="form-group">
+                        <label>Current Company</label>
+                        <input type="text" class="form-control" v-model="form.companyName">
+                    </div>
+                    <div class="form-group">
+                        <label>Current Title</label>
+                        <input type="text" class="form-control" v-model="form.title">
+                    </div>
+                </div>
+                <div v-if='form.widgetType=="account"'>
+                    <div class="form-group">
+                        <label>Company Name</label>
+                        <input type="text" class="form-control" v-model="form.companyName" @input="updateCrmRecordId($event)">
+                    </div>
+                    <div class="form-group">
+                        <label>Company Website</label>
+                        <input type="text" class="form-control" v-model="form.companyWebsite">
+                    </div>
+                    <div class="form-group">
+                        <label>Company Industry</label>
+                        <input type="text" class="form-control" v-model="form.companyIndustry">
+                    </div>
+                    <div class="form-group">
+                        <label>Company Location</label>
+                        <input type="text" class="form-control" v-model="form.companyLocation">
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Customize the modules</legend>
+                <div>
+                    <form>
+                        <div class="form-group">
+                            <label v-for="(value,key) in options.widget[form.widgetType].modules" class="radio-inline" v-if="form.isInlineMode">
+                                <input type="radio" v-bind:value="key" v-model="form.modulesSingle">
+                                [[key]]
+                            </label>
+                            <label v-for="(value,key) in options.widget[form.widgetType].modules" class="checkbox-inline" v-if="!form.isInlineMode">
+                                <input type="checkbox" v-bind:value="key" v-model="form.modulesMultiple">
+                                [[key]]
+                            </label>
+                        </div>
+                    </form>
+                    <hr>
+                    <form>
+                        <div class="form-group">
+                            <label class="checkbox-inline">
+                                <input type="checkbox" v-model="form.isInlineMode">
+                                isInlineMode
+                            </label>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" v-model="form.isVanillaBprMode">
+                                isVanillaBprMode(internal)
+                            </label>
+                        </div>
+                    </form>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Authentication</legend>
+                <div class="form-group">
+                    <div>Sales Access Token:</div>
+                    <textarea placeholder="Input an SAT here if you already have one, or you can click the generate button below to create one."
+                        id="sales-access-token" class="form-control" cols="50" rows="8" v-model="form.sat" type="text"></textarea>
+                </div>
+                <button class="btn btn-default" @click="generateSAT">GENERATE</button>
+            </fieldset>
+        </div>
+        <div class="col-md-4">
+            <fieldset>
+                <legend>Iframe Size</legend>
+                <div class="form-group">
+                    <label>Width</label>
+                    <input type="text" class="form-control" v-model="form.width">
+                </div>
+                <div class="form-group">
+                    <label>Height</label>
+                    <input type="text" class="form-control" v-model="form.height">
+                </div>
+                <h5>Recommended Sizes:</h5>
+                <div class="form-group" v-for="(value, key) in options.widget[form.widgetType].modules[form.modulesSingle].recommendedSizes"
+                     v-if="form.isInlineMode" class="sizeRow">
+                    <button class="btn btn-default" @click="resizeIframe(value.width, value.height)">[[value.name]] - [[value.width]] x
+                        [[value.height]]</button>
+                </div>
+                <div class="form-group" v-for="(value, key) in options.widget[form.widgetType].classicMode.recommendedSizes"
+                     v-if="!form.isInlineMode" class="sizeRow">
+                    <button class="btn btn-default" @click="resizeIframe(value.width, value.height)">[[value.name]] - [[value.width]] x
+                        [[value.height]]</button>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Iframe URL</legend>
+                <div class="form-group">
+                    <textarea class="form-control" id="iframeUrlInput" cols="50" rows="10" readonly="readonly" type="text">[[iframeUrl]]</textarea>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-default" onclick="renderIframe()">Submit</button>
+                    <button class="btn btn-default" onclick="copyUrl()">Copy</button>
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-md-4">
+            <iframe id="iframeElement" v-bind:width="form.width" v-bind:height="form.height" frameborder="0" type="text/html"></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+    var iframeService = new Vue({
+        el: '#snap-content',
+        delimiters: ['[[',']]'],
+        data: {
+            form: {
+                environment: "PROD",
+                domain: "www.linkedin.com",
+                apiKey: "86012cynxvvidr",
+                version: "2.1",
+                widgetType: "lead",
+                crmSourceType: "SAMPLE",
+                crmOrgId: "tonyxuorg",
+                crmRecordId: "lead-TonyXu",
+                firstName: "Tony",
+                lastName: "Xu",
+                email: "tonxu@linkedin.com",
+                title: "Partner Engineer",
+                companyName: "LinkedIn",
+                companyWebsite: "www.linkedin.com",
+                companyIndustry: "Internet",
+                companyLocation: "United States",
+                modulesSingle: "TopCard2",
+                modulesMultiple: [],
+                isInlineMode: false,
+                sat: "",
+                width: 320,
+                height: 405,
+                isVanillaBprMode: false
+            },
+            options: {
+                environments: {
+                    PROD: {
+                        apiKey: "86012cynxvvidr",
+                        domain: "www.linkedin.com"
+                    },
+                    EI: {
+                        apiKey: "84mqroef5wz0vt",
+                        domain: "www.linkedin-ei.com"
+                    }
+                },
+                widget: {
+                    lead: {
+                        modules: {
+                            TopCard: {
+                                recommendedSizes: [{
+                                    width: 300,
+                                    height: 336,
+                                    name: "1-Column Small"
+                                }, {
+                                    width: 625,
+                                    height: 390,
+                                    name: "2-Column Small"
+                                }, {
+                                    width: 300,
+                                    height: 528,
+                                    name: "1-Column Medium"
+                                }]
+                            },
+                            TopCard2: {
+                                recommendedSizes: [{
+                                    width: 300,
+                                    height: 336,
+                                    name: "1-Column Small"
+                                }, {
+                                    width: 625,
+                                    height: 390,
+                                    name: "2-Column Small"
+                                }, {
+                                    width: 300,
+                                    height: 528,
+                                    name: "1-Column Medium"
+                                }]
+                            },
+                            GetIntroduced: {
+                                recommendedSizes: [{
+                                    width: 300,
+                                    height: 336,
+                                    name: "1-Column Small"
+                                }, {
+                                    width: 625,
+                                    height: 336,
+                                    name: "2-Column Small"
+                                }]
+                            },
+                            Messaging: {
+                                recommendedSizes: [{
+                                    width: 300,
+                                    height: 336,
+                                    name: "1-Column Small"
+                                }, {
+                                    width: 625,
+                                    height: 390,
+                                    name: "2-Column Small"
+                                }, {
+                                    width: 300,
+                                    height: 528,
+                                    name: "1-Column Medium"
+                                }]
+                            },
+                            Connect: {
+                                recommendedSizes: [{
+                                    width: 300,
+                                    height: 336,
+                                    name: "1-Column Small"
+                                }, {
+                                    width: 625,
+                                    height: 390,
+                                    name: "2-Column Small"
+                                }, {
+                                    width: 300,
+                                    height: 528,
+                                    name: "1-Column Medium"
+                                }]
+                            },
+                            RecentActivity: {
+                                recommendedSizes: [{
+                                    width: 300,
+                                    height: 155,
+                                    name: "1-Column Thumbnail"
+                                },
+                                    {
+                                        width: 625,
+                                        height: 155,
+                                        name: "2-Column Thumbnail"
+                                    }
+                                ]
+                            },
+                            Highlights: {
+                                recommendedSizes: [{
+                                    width: 300,
+                                    height: 155,
+                                    name: "1-Column Thumbnail"
+                                },
+                                    {
+                                        width: 625,
+                                        height: 155,
+                                        name: "2-Column Thumbnail"
+                                    }
+                                ]
+                            },
+                            RelatedLeads: {
+                                recommendedSizes: [{
+                                    width: 300,
+                                    height: 230,
+                                    name: "1-Column Thumbnail"
+                                },
+                                    {
+                                        width: 625,
+                                        height: 230,
+                                        name: "2-Column Thumbnail"
+                                    }
+                                ]
+                            }
+                        },
+                        classicMode: {
+                            recommendedSizes: [{
+                                width: 320,
+                                height: 405,
+                                name: "1-Column Small"
+                            }, {
+                                width: 320,
+                                height: 515,
+                                name: "1-Column Medium"
+                            }, {
+                                width: 320,
+                                height: 820,
+                                name: "1-Column Large"
+                            }, {
+                                width: 640,
+                                height: 515,
+                                name: "2-Column Medium"
+                            }, {
+                                width: 944,
+                                height: 515,
+                                name: "3-Column Medium"
+                            }]
+                        }
+                    },
+                    account: {
+                        modules: {
+                            TopCard: {
+                                recommendedSizes: [{
+                                    name: "1-Column Small",
+                                    width: 300,
+                                    height: 265
+                                }]
+                            },
+                            TopCard2: {
+                                recommendedSizes: [{
+                                    name: "1-Column Small",
+                                    width: 300,
+                                    height: 265
+                                }]
+                            },
+                            RecommendedLeads: {
+                                recommendedSizes: [{
+                                    name: "1-Column Small",
+                                    width: 300,
+                                    height: 265
+                                },
+                                    {
+                                        name: "2-Column Small",
+                                        width: 625,
+                                        height: 230,
+                                    }
+                                ]
+                            },
+                            Connections: {
+                                recommendedSizes: [{
+                                    name: "1-Column Small",
+                                    width: 300,
+                                    height: 230
+                                },
+                                    {
+                                        name: "2-Column Small",
+                                        width: 625,
+                                        height: 230,
+                                    }
+                                ]
+                            },
+                            News: {
+                                recommendedSizes: [{
+                                    name: "1-Column Thumbnail",
+                                    width: 300,
+                                    height: 155
+                                },
+                                    {
+                                        name: "2-Column Thumbnail",
+                                        width: 625,
+                                        height: 155
+                                    }
+                                ]
+                            }
+                        },
+                        classicMode: {
+                            recommendedSizes: [{
+                                width: 320,
+                                height: 405,
+                                name: "1-Column Small"
+                            }, {
+                                width: 320,
+                                height: 515,
+                                name: "1-Column Medium"
+                            }, {
+                                width: 320,
+                                height: 790,
+                                name: "1-Column Large"
+                            }, {
+                                width: 640,
+                                height: 525,
+                                name: "2-Column Medium"
+                            }, {
+                                width: 944,
+                                height: 525,
+                                name: "3-Column Medium"
+                            }]
+                        }
+                    }
+                }
+            },
+        },
+        computed: {
+            iframeUrl: function () {
+                var url =
+                    `https://${this.form.domain}/sales/widget/${this.form.widgetType === 'lead' ? 'profile-matching' : 'company-matching'}?from=crm&crmSourceType=${this.form.crmSourceType}&apiKey=${this.form.apiKey}&crmRecordId=${encodeURIComponent(this.form.crmRecordId)}&crmOrgId=${encodeURIComponent(this.form.crmOrgId)}&version=${this.form.version}&modules=${this.selectedModules}&isInlineMode=${this.form.isInlineMode}${this.form.isVanillaBprMode ? '&_bprMode=vanilla' : ''}`
+                if (this.form.widgetType === 'lead') {
+                    url +=
+                        `&firstName=${encodeURIComponent(this.form.firstName)}&lastName=${encodeURIComponent(this.form.lastName)}&email=${encodeURIComponent(this.form.email)}&companyName=${encodeURIComponent(this.form.companyName)}&title=${encodeURIComponent(this.form.title)}`
+                } else {
+                    url +=
+                        `&name=${encodeURIComponent(this.form.companyName)}&website=${encodeURIComponent(this.form.companyWebsite)}&industry=${encodeURIComponent(this.form.companyIndustry)}&location=${encodeURIComponent(this.form.companyLocation)}`
+                }
+                if (this.form.sat !== '') {
+                    url += `&sat=${this.form.sat}`
+                }
+                return url
+            },
+            selectedModules: function () {
+                if (this.form.widgetType === 'lead') {
+                    if (this.form.isInlineMode) {
+                        return this.form.modulesSingle
+                    } else {
+                        return this.form.modulesMultiple
+                    }
+                } else {
+                    if (this.form.isInlineMode) {
+                        return this.form.modulesSingle
+                    } else {
+                        return this.form.modulesMultiple
+                    }
+                }
+            }
+        },
+        methods: {
+            updateCrmRecordId: function (event) {
+                this.form.crmRecordId = this.form.widgetType === "lead" ?
+                    `lead-${removeSpecialChars(this.form.firstName)}-${removeSpecialChars(this.form.lastName)}` :
+                    `account-${removeSpecialChars(this.form.companyName)}`
+            },
+            resizeIframe(width, height) {
+                this.form.width = width
+                this.form.height = height
+            },
+            generateSAT() {
+                // TODO: Close the popup window after getting the SAT
+                window.open(
+                    // TODO: Migrate the api server code to same MP
+                    '/OAuth/begin_oauth', 'test_popup',
+                    '_blank')
+            },
+            updateEnvironment: function (event) {
+                console.log(event.target.value)
+                this.form.domain = this.options.environments[event.target.value].domain
+                this.form.apiKey = this.options.environments[event.target.value].apiKey
+            },
+            updateWidgetType() {
+                this.form.modulesSingle = "TopCard2",
+                    this.form.modulesMultiple = []
+            },
+            OAuthResponseListener(event) {
+                const postData = JSON.parse(event.data);
+                const eventType = postData && postData.type;
+                
+                if (eventType === 'salesNavAuthSuccess') {
+                    this.generateSAT();
+                } else if (eventType === 'salesAccessTokenCallback') {
+                    const salesAccessToken = postData && postData.salesAccessToken;
+                    assignSalesAccessTokenToWidget(salesAccessToken);
+                } else if (eventType === "salesNavAuthFailure") {
+                    // TODO: Handle unsuccessful auth failure.
+                    // A proper app might handle this, but instead ssinger wrote this one with TODOs.
+                } else {
+                    // TODO: Error handling if an undefined type is returned.
+                    // A proper app might handle this, but instead ssinger wrote this one with TODOs.
+                }
+            },
+        },
+
+        created: function () {
+            window.addEventListener("message", this.OAuthResponseListener, false);
+        },
+
+        destroyed: function () {
+            window.removeEventListener("message", this.OAuthResponseListener, false);
+        },
+
+    })
+
+    function removeSpecialChars(string) {
+        return string.replace(/[^a-zA-Z]/g, "")
+    }
+
+    function copyUrl() {
+        document.getElementById("iframeUrlInput").select();
+        document.execCommand("copy");
+    }
+
+    function renderIframe() {
+        document.getElementById("iframeElement").src = document.getElementById("iframeUrlInput").value;
+    }
+
+    function assignSalesAccessTokenToWidget(salesAccessToken) {
+        document.getElementById("sales-access-token").value = salesAccessToken;
+        document.getElementById("iframeUrlInput").value = document.querySelector('#iframeUrlInput').value + '&sat=' + salesAccessToken;
+    }
+
+    window.addEventListener("message", receiveMessage, false);
+
+    function receiveMessage(event) {
+        if (event.origin === 'https://www.linkedin.com') {
+            console.log(`${event.origin} \n ${event.data}`)
+        }
+    }
+</script>
+</body>

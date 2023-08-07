@@ -1,0 +1,30 @@
+{% set nav = {
+  'project_title': 'SNAP Display Widget Playground',
+  'project': 'snap-display-widget-playground',
+  'items': [],
+  'login': False,
+  'inversion': True,
+  'bootstrap': '3.3',
+} %}
+
+{% extends "tools/layout-bs3.html" %}
+
+{% block title %}SNAP Display Widget Playground{% endblock %}
+
+{% block footer %}
+<div class="row">
+  <div class="col-md-12">
+    <p>
+      <a class="brand" href="/">
+        {{ nav.project_title or nav.project }}
+      </a>
+      {{ project_version(nav.project) }}
+      &copy; LinkedIn 2019-2020
+      {% if config.SENTRY_PROJECT %}
+      | <a href="{{ config.SENTRY_SERVER }}/{{ config.SENTRY_PROJECT }}">Sentry error logs</a>
+      {% endif %}
+      | Questions? <a href="mailto:partner-eng-lss@linkedin.com">partner-eng-lss@linkedin.com</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
