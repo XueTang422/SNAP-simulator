@@ -4,11 +4,15 @@ import requests
 
 from flask import Flask, render_template, redirect, request
 
-from app_credentials import secret_vars
-
 log = logging.getLogger(__name__)
 
 app = Flask(__name__)
+
+secret_vars = {
+    'client_id': '77z6jwn2wdkrg3',
+    'client_secret': 'FjZsrETXwqEEQqTS',
+    'state_secret': 'test',
+}
 
 @app.route('/')
 def index():
