@@ -22,7 +22,7 @@ def index():
 @app.route('/OAuth/begin_oauth', methods=['GET'])
 def begin_oauth():
     return redirect("https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id="
-                    + secret_vars['client_id'] + "&redirect_uri=http://ltx1-app2411.stg.linkedin.com:13072/OAuth/return_oauth&state="
+                    + secret_vars['client_id'] + "&redirect_uri=http://xuetangtest.pythonanywhere.com/OAuth/return_oauth&state="
                     + secret_vars['state_secret'] + "&scope=r_sales_nav_display")
 
 
@@ -36,7 +36,7 @@ def return_oauth():
         'client_id': secret_vars['client_id'],
         'client_secret': secret_vars['client_secret'],
         'scope': 'r_sales_nav_display',
-        'redirect_uri': 'http://ltx1-app2411.stg.linkedin.com:13072/OAuth/return_oauth',
+        'redirect_uri': 'http://xuetangtest.pythonanywhere.com/OAuth/return_oauth',
     }
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
