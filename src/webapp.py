@@ -73,8 +73,13 @@ def return_oauth():
         "Authorization": "Bearer {}".format(accessToken),
         "X-Restli-Protocol-Version": "2.0.0"
     }
-    SAT_response = requests.get(url, headers=headers)
-    SAT_result = SAT_response.json()
+    SAT_response = requests.get(url, headers=headers, timeout=5)
+    SAT_elements = SAT_response.json()['elements']
+    SAT_result = {
+        "Success": True,
+        "SalesAccessToken": SAT_elements[0]['token'],
+        "ExpiryTime": SAT_elements[0]['expirtTime'],
+    }
     return render_template('SAT_retrieval.html', AccessTokenResponse=AT_result, SalesAccessTokenResponse=SAT_result)
 
 
