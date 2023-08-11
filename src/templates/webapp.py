@@ -1,12 +1,33 @@
-import requests
-from flask import redirect, render_template, url_for
-from app_secrets import secret_vars
+import logging
 
+import requests
+
+from flask import Flask, render_template, redirect, request
+
+log = logging.getLogger(__name__)
+
+app = Flask(__name__)
+
+secret_vars = {
+    'client_id': '77z6jwn2wdkrg3',
+    'client_secret': 'FjZsrETXwqEEQqTS',
+    'state_secret': 'test',
+}
+
+
+@app.route('/')
+def index():
+    return render_template('snap_display_widget_playground.html')
+
+
+@app.route('/OAuth/begin_oauth', methods=['GET'])
 def begin_oauth():
     return redirect("https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id="
                     + secret_vars['client_id'] + "&redirect_uri=http://xuetangtest.pythonanywhere.com/OAuth/return_oauth&state="
                     + secret_vars['state_secret'] + "&scope=r_sales_nav_display")
 
+
+@app.route('/OAuth/return_oauth', methods=['GET', 'POST'])
 def return_oauth():
     AT_result = {}
     code = request.args.get('code', default='Not available', type=str)
@@ -45,7 +66,6 @@ def return_oauth():
             "Params": params,
             "Headers": headers,
         }
-
     SAT_result = {}
     accessToken = AT_result.get('accessToken', 'error')
     url = "https://api.linkedin.com/v2/salesAccessTokens?q=viewerAndDeveloperApp"
@@ -55,5 +75,8 @@ def return_oauth():
     }
     SAT_response = requests.get(url, headers=headers)
     SAT_result = SAT_response.json()
-
     return render_template('SAT_retrieval.html', AccessTokenResponse=AT_result, SalesAccessTokenResponse=SAT_result)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
