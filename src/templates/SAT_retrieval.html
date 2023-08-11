@@ -11,3 +11,13 @@
     <p><b>{{ item }}</b> : {{ SalesAccessTokenResponse[item] }}</p>
   {% endfor %}
 </section>
+
+
+<script type="text/javascript">
+  var salesAccessToken = SalesAccessTokenResponse['elements']['token'];
+  const targetWindow = window.opener;
+  targetWindow && targetWindow.postMessage(JSON.stringify({
+    type: 'salesAccessTokenCallback',
+    salesAccessToken: salesAccessToken,
+  }), '*');
+</script>
