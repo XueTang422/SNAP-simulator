@@ -47,7 +47,7 @@ def return_oauth():
             api_response = response.json()
             AT_result = {
                 "Success": True,
-                "SAT": api_response.get('access_token', 'error'),
+                "accessToken": api_response.get('access_token', 'error'),
             }
         else:
             AT_result = {
@@ -67,7 +67,7 @@ def return_oauth():
         }
 
     SAT_result = {}
-    accessToken = request.args.get('access_token', default='Not available', type=str)
+    accessToken = AT_result.get('accessToken', 'error')
     url = "https://api.linkedin.com/v2/salesAccessTokens?q=viewerAndDeveloperApp"
     headers = {
         "Authorization": "Bearer {}".format(accessToken),
