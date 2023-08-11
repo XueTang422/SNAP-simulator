@@ -70,7 +70,7 @@ def return_oauth():
     accessToken = request.args.get('access_token', default='Not available', type=str)
     url = "https://api.linkedin.com/v2/salesAccessTokens?q=viewerAndDeveloperApp"
     headers = {
-        "Authorization": "Bearer {accessToken}".format(accessToken=accessToken),
+        "Authorization": "Bearer "+accessToken,
         "X-Restli-Protocol-Version": "2.0.0"
     }
     SAT_response = requests.get(url, headers=headers)
