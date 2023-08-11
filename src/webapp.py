@@ -77,8 +77,7 @@ def return_oauth():
     SAT_elements = SAT_response.json()['elements']
     SAT_result = {
         "Success": True,
-        "SalesAccessToken": SAT_elements['token'],
-        "ExpiryTime": SAT_elements['expirtTime'],
+        "SAT_elements": SAT_elements,
     }
     return render_template('SAT_retrieval.html', AccessTokenResponse=AT_result, SalesAccessTokenResponse=SAT_result)
 
