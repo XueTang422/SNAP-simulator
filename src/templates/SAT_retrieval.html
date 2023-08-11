@@ -14,7 +14,7 @@
 
 
 <script type="text/javascript">
-  var salesAccessToken = SalesAccessTokenResponse['elements'][0]['token'];
+  var salesAccessToken = SalesAccessTokenResponse['elements']['token'];
   const targetWindow = window.opener;
   targetWindow && targetWindow.postMessage(JSON.stringify({
     type: 'salesAccessTokenCallback',
