@@ -1,4 +1,12 @@
-<section>
+<section col-12>
+  <h1>Retrieve Access Token</h1>
+  {% for item in AccessTokenResponse %}
+    <p><b>{{ item }}</b> : {{ AccessTokenResponse[item] }}</p>
+  {% endfor %}
+</section>
+
+<section col-12>
+  <h1>Retrieve Sales Access Token</h1>
   {% for item in SalesAccessTokenResponse %}
     <p><b>{{ item }}</b> : {{ SalesAccessTokenResponse[item] }}</p>
   {% endfor %}

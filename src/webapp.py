@@ -76,7 +76,7 @@ def return_oauth():
     SAT_response = requests.get(url, headers=headers)
     SAT_result = SAT_response.json()
 
-    return render_template('SAT_retrieval.html', SalesAccessTokenResponse=SAT_result)
+    return render_template('SAT_retrieval.html', AccessTokenResponse=AT_result, SalesAccessTokenResponse=SAT_result)
 
 if __name__ == '__main__':
     app.run(debug=True)
