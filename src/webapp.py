@@ -1,7 +1,9 @@
 from flask import Flask, render_template
-from routes import oauth_routes
+from routes import register_routes
 
 app = Flask(__name__)
+
+register_routes(app)
 
 @app.route('/')
 def index():

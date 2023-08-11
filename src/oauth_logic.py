@@ -1,11 +1,11 @@
 import requests
 from flask import redirect, render_template, url_for
-from secrets import secret_vars
+from app_secrets import secret_vars
 
 def begin_oauth():
     return redirect("https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id="
-                    + secret_vars['client_id'] + "&redirect_uri=" + url_for('return_oauth', _external=True)
-                    + "&state=" + secret_vars['state_secret'] + "&scope=r_sales_nav_display")
+                    + secret_vars['client_id'] + "&redirect_uri=http://xuetangtest.pythonanywhere.com/OAuth/return_oauth&state="
+                    + secret_vars['state_secret'] + "&scope=r_sales_nav_display")
 
 def return_oauth():
     AT_result = {}
