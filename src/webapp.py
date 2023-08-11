@@ -28,7 +28,7 @@ def begin_oauth():
 
 @app.route('/OAuth/return_oauth', methods=['GET', 'POST'])
 def return_oauth():
-    SAT_result = {}
+    AT_result = {}
     code = request.args.get('code', default='Not available', type=str)
     params = {
         'code': code,
@@ -45,12 +45,12 @@ def return_oauth():
         response = requests.post('https://www.linkedin.com/oauth/v2/accessToken', params=params, headers=headers, timeout=5)
         if response.status_code == 200:
             api_response = response.json()
-            SAT_result = {
+            AT_result = {
                 "Success": True,
                 "SAT": api_response.get('access_token', 'error'),
             }
         else:
-            SAT_result = {
+            AT_result = {
                 "Error": response.status_code,
                 "Code": code,
                 "Params": params,
@@ -58,13 +58,23 @@ def return_oauth():
                 "Response": response.json(),
             }
     except Exception as e:
-        SAT_result = {
+        AT_result = {
             "Error": "Post request to end-point /oauth/v2/accessToken failed",
             "Message": str(e),
             "Code": code,
             "Params": params,
             "Headers": headers,
         }
+
+    SAT_result = {}
+    accessToken = request.args.get('access_token', default='Not available', type=str)
+    url = "https://api.linkedin.com/v2/salesAccessTokens?q=viewerAndDeveloperApp"
+    headers = {
+        "Authorization": "Bearer {accessToken}".format(accessToken=accessToken),
+        "X-Restli-Protocol-Version": "2.0.0"
+    }
+    SAT_response = requests.get(url, headers=headers)
+    SAT_result = SAT_response.json()
 
     return render_template('SAT_retrieval.html', SalesAccessTokenResponse=SAT_result)
 
