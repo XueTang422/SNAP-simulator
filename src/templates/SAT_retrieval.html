@@ -7,14 +7,13 @@
 
 <section col-12>
   <h1>Retrieve Sales Access Token</h1>
-  {% for item in SalesAccessTokenResponse %}
-    <p><b>{{ item }}</b> : {{ SalesAccessTokenResponse[item] }}</p>
-  {% endfor %}
+  <p><b>Success</b> : {{ SalesAccessTokenResponse['Success'] }}</p>
+  <p><b>salesAccessToken</b> : <span id="SATValue">{{ SalesAccessTokenResponse['SalesAccessToken'] }}</span></p>
 </section>
 
 
 <script type="text/javascript">
-  var salesAccessToken = SalesAccessTokenResponse['SalesAccessToken'];
+  var salesAccessToken = document.getElementById('SATValue').value;
   const targetWindow = window.opener;
   targetWindow && targetWindow.postMessage(JSON.stringify({
     type: 'salesAccessTokenCallback',
