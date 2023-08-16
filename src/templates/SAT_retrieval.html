@@ -13,7 +13,7 @@
 
 
 <script type="text/javascript">
-  var salesAccessToken = document.getElementById('SATValue').value;
+  var salesAccessToken = document.getElementById('SATValue').textContent;
   const targetWindow = window.opener;
   targetWindow && targetWindow.postMessage(JSON.stringify({
     type: 'salesAccessTokenCallback',
