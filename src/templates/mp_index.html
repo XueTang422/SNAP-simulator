@@ -1,0 +1,55 @@
+<head>
+    <title>SNAP Display Widget OAuth 2.1</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>SNAP Display Widget OAuth 2.1</h1>
+        <h2>Introduction</h2>
+        <p>This App is an OAuth 2.1 widget simulator to partner apps. It will generate a Sales Access Token (SAT) for the Snap Display Widget. The SAT is valid for 45 mins.</p>
+        <h2>Generate a Sales Access Token</h2>
+        <p>Click the signin button below to start the OAuth 2.1 flow and generate a SAT Token.</p>
+        <iframe id="widget-to-oauth" src="https://linkedin.com/sales/widget/profile-matching?from=crm&crmSourceType=SAMPLE&apiKey=86012cynxvvidr&crmRecordId=lead-TonyXu&crmOrgId=tonyxuorg&version=2.1&modules=&isInlineMode=false&firstName=Tony&lastName=Xu&email=tonxu%40linkedin.com&companyName=LinkedIn&title=Partner%20Engineer" width="500" height="500">
+        </iframe>
+        <h2>Sales Access Token</h2>
+        <div id="access-token">
+        Not yet retrieved.
+        </div>
+        <h2>Use OAuth App for development</h2>
+        <p>This OAuth App serves as a generic SAT generator for development. To use this App in your MP, navigate the browser to /OAuth/begin_oauth to start the OAuth flow.</p>
+    </div>
+</body>
+
+<script type="text/javascript">
+    
+    function assignSalesAccessTokenToWidget(salesAccessToken) {
+        document.querySelector('#access-token').innerText = salesAccessToken;
+        document.querySelector('#widget-to-oauth').src = document.querySelector('#widget-to-oauth').src + '&sat=' + salesAccessToken;
+    }
+  
+    function startOAuthFlow() {
+        const width = 800;
+        const height = 800;
+        const leftPosition = screen.width / 2 - width / 2;
+        const topPosition = screen.height / 2 - height / 2;
+        const popupConfig = `toolbar=0,scrollbars=0,status=0,location=0,width=${width},height=${height},left=${leftPosition},top=${topPosition}`;
+        window.salesNavAuthPopupWindow = window.open('/OAuth/begin_oauth', 'OAuth_popup', popupConfig);
+    }
+  
+    window.addEventListener('message', function(event) {
+        const postData = JSON.parse(event.data);
+        const eventType = postData && postData.type;
+        if (eventType === 'salesNavAuthSuccess') {
+            startOAuthFlow();
+        } else if (eventType === 'salesAccessTokenCallback') {
+            const salesAccessToken = postData && postData.salesAccessToken;
+            assignSalesAccessTokenToWidget(salesAccessToken);
+            if (window.salesNavAuthPopupWindow) {
+                window.salesNavAuthPopupWindow.close();
+            }
+        } else {
+            console.log('Sales Navigator auth failed');
+        }
+    });
+</script>

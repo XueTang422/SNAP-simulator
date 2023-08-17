@@ -17,7 +17,7 @@ secret_vars = {
 
 @app.route('/')
 def index():
-    return render_template('snap_display_widget_playground.html')
+    return render_template('mp_index.html')
 
 
 @app.route('/OAuth/begin_oauth', methods=['GET'])
